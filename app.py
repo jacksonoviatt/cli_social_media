@@ -18,44 +18,80 @@ except mariadb.OperationalError:
 except:
     print("there is an unexpected error")
     
+# ask the user if they have an account so we can send them to either login or signup
+sign_up = input("Do you already have an account with us? y/n: ")
 
-# Try to logim
+# Try to login
 
-try:
-    # Enter the username and then the password. 
-    # An sql statement and a conditonal block will check If there is a user with the same name, and the password is entered correctly, 
-    # the  is logged in value will be true, otherwise, the corresponding error message will appear
-    username = input("Please enter your username: ")
+# if the user does have an account with us, the login prompts will appear
+if(sign_up == "y"):
+    try:
+        # Enter the username and then the password. 
+            # An sql statement and a conditonal block will check If there is a user with the same name, and the password is entered correctly, 
+            # the  is logged in value will be true, otherwise, the corresponding error message will appear
+        username = input("Please enter your username: ")
 
-    password = input("Please enter your password: ")
+        password = input("Please enter your password: ")
 
-    cursor.execute("SELECT * FROM hackers WHERE alias=?", [username, ])
-    current_hacker = cursor.fetchone()
-    if(current_hacker[2] == password):
-        print("")
-        print("you are now logged in!")
+        cursor.execute("SELECT * FROM hackers WHERE alias=?", [username, ])
+        current_hacker = cursor.fetchone()
+        if(current_hacker[2] == password):
+            print("")
+            print("you are now logged in!")
+            logged_in = True
+        else:
+            print("")
+            print("Wrong password")
+    except mariadb.IntegrityError:
+        print("There was an integrity error, the post was not posted")
+    except mariadb.DataError:
+        print("There was a data error")
+        traceback.print_exc()
+    except mariadb.InternalError:
+        print("there was an internal error ")
+        traceback.print_exc()
+    except mariadb.DatabaseError:
+        print("there was a database error ")
+        traceback.print_exc()
+    except mariadb.OperationalError:
+        print("There was an operational error")
+        traceback.print_exc()
+    except:
+        print("There is no account with that username")
+
+# if the user says no, they will be directed to sign up
+# this will send an insert sql statement that will add the new user to the hacker table
+# then we will fetch the user using a select sql statement and set current_hacker to the signed up users
+# set logged in to true and continue on in the application
+elif(sign_up == "n"):
+    try:
+        print("Welcome! Please sign up")
+        new_username = input("Alias: ")
+        new_password = input("Password: ")
+        cursor.execute(f"INSERT INTO hackers(alias, password) VALUES('{new_username}', '{new_password}')")
+        conn.commit()
+        cursor.execute("SELECT * FROM hackers WHERE alias=?", [new_username, ])
+        current_hacker = cursor.fetchone()
         logged_in = True
-    else:
-        print("")
-        print("Wrong password")
-except mariadb.IntegrityError:
-    print("There was an integrity error, the post was not posted")
-except mariadb.DataError:
-    print("There was a data error")
-    traceback.print_exc()
-except mariadb.InternalError:
-    print("there was an internal error ")
-    traceback.print_exc()
-except mariadb.DatabaseError:
-    print("there was a database error ")
-    traceback.print_exc()
-except mariadb.OperationalError:
-    print("There was an operational error")
-    traceback.print_exc()
-except:
-    print("There is no account with that username")
-    
+    except mariadb.IntegrityError:
+        print("There was an integrity error, the post was not posted")
+    except mariadb.DataError:
+        print("There was a data error")
+        traceback.print_exc()
+    except mariadb.InternalError:
+        print("there was an internal error ")
+        traceback.print_exc()
+    except mariadb.DatabaseError:
+        print("there was a database error ")
+        traceback.print_exc()
+    except mariadb.OperationalError:
+        print("There was an operational error")
+        traceback.print_exc()
+    except:
+        print("there was an unexpected error")
 
+else:
+    print("That is not a valid answer")
 # this function will add a post into the database
 
 def insert_exploit():

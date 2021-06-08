@@ -207,7 +207,7 @@ while(logged_in == True):
         print("Please choose a correct key")
     
 
-dbconnect.close_db_cursor
-dbconnect.close_db_connection
+dbconnect.close_db_cursor(cursor)
+dbconnect.close_db_connection(conn)
 
 
